@@ -21,7 +21,33 @@ app.get("/", function (req, res) {
 });
 
 app.get("/users", function (req, res) {
-  res.send(users);
+  //res.send(users);
+  console.log(req.query); // skriver ut query-parametrar på konsolen
+  if (Object.keys(req.query).length == 0) {
+    // kolla om objektet är tomt
+    res.send(users); // skicka hela tabellen
+    return; // avsluta funktionen utan att ytterligare processa query-parametrar
+  }
+  // processa query-parametrar
+  let output = [];
+  for (let i = 0; i < users.length; i++) {
+    // loopa igenom users
+    let match = true;
+    // antag först match=true
+    for (let key in req.query) {
+      // loopa igenom attribut
+      if (users[i][key] != req.query[key]) {
+        // om något attributvärde *inte* matchar så ändra till false och bryt
+        match = false;
+        break;
+      }
+    }
+    // lägg till i resultatet ifall vi har en matchning
+    if (match) {
+      output.push(users[i]);
+    }
+  }
+  res.send(output);
 });
 
 // processa route-parametrar
